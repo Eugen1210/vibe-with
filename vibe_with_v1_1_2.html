@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<title>vibe with</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden;
+  touch-action:manipulation;
+  -webkit-text-size-adjust:100%;
+}
+body{
+  font-family:"Hiragino Sans","Yu Gothic",sans-serif;
+  background:linear-gradient(180deg,#fff0f7,#edf8ff);
+  color:#4a3a3a;
+  user-select:none;
+}
+input,textarea,select{user-select:text}
+.app{
+  max-width:430px;
+  margin:0 auto;
+  min-height:100vh;
+  padding:18px;
+  position:relative;
+}
+h1,h2,h3{text-align:center}
+h1{
+  font-size:32px;
+  color:#ff6fae;
+  line-height:1.1;
+  cursor:pointer;
+  user-select:none;
+}
+.card{
+  background:#fff;
+  border-radius:24px;
+  padding:18px;
+  margin:14px 0;
+  box-shadow:0 8px 20px rgba(255,120,170,.18);
+}
+button{
+  width:100%;
+  border:none;
+  border-radius:18px;
+  padding:15px;
+  margin:8px 0;
+  font-size:17px;
+  font-weight:bold;
+  background:#ff9ac8;
+  color:#fff;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+button:active{transform:scale(.98)}
+.sub{background:#8fc7ff}
+.gray{background:#aaa}
+.danger{background:#ff7777}
+.edit{background:#b99cff}
+.gold{background:#d6a300}
+input,select,textarea{
+  width:100%;
+  padding:13px;
+  margin:7px 0;
+  border-radius:14px;
+  border:2px solid #ffd1e5;
+  font-size:16px;
+  background:#fff;
+}
+textarea{
+  min-height:90px;
+  resize:vertical;
+}
+.hidden{display:none!important}
+.small{font-size:13px;color:#777;text-align:center}
+.row{display:flex;gap:8px;align-items:center}
+.row input{flex:1}
+.scoreInput{max-width:72px;text-align:center}
+.choice-btn{
+  background:#fff5fb;
+  color:#4a3a3a;
+  border:2px solid #ffaad1;
+  text-align:left;
+}
+.rank-item{
+  background:#fff5fb;
+  border-radius:16px;
+  padding:12px;
+  margin:8px 0;
+  border:2px solid #ffd1e5;
+}
+.result-rank{font-size:18px;font-weight:bold}
+.top1{color:#f0a000}
+.top2{color:#888}
+.top3{color:#b87333}
+.tabs{display:flex;gap:8px}
+.tabs button{font-size:14px;padding:12px 6px}
+.checkrow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:10px 0;
+}
+.checkrow input{width:auto}
+.version-badge{
+  position:fixed;
+  left:10px;
+  bottom:10px;
+  z-index:5000;
+  font-size:11px;
+  line-height:1.15;
+  background:rgba(255,255,255,.72);
+  border:1px solid #ffd1e5;
+  border-radius:12px;
+  padding:7px 9px;
+  color:#8a4a67;
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+  cursor:pointer;
+}
+.blackout{
+  position:fixed;
+  inset:0;
+  z-index:9000;
+  background:#000;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:24px;
+}
+.blackout .box{max-width:360px}
+#lamp{
+  position:fixed;
+  right:10px;
+  bottom:15px;
+  z-index:8000;
+  opacity:.65;
+  pointer-events:none;
+}
+#lamp img{
+  width:90px;
+  height:auto;
+  filter:drop-shadow(0 0 10px gold);
+}
+.rare-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.rare-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.rare-close{
+  position:absolute;
+  bottom:28px;
+  left:50%;
+  transform:translateX(-50%);
+  width:82%;
+  max-width:330px;
+  background:rgba(255,154,200,.9);
+}
+.freeze-overlay{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#d6a300;
+  text-align:center;
+  padding:22px;
+}
+.freeze-text{
+  font-size:42px;
+  font-weight:900;
+  line-height:1.35;
+  color:#d6a300;
+  text-shadow:0 0 10px rgba(255,215,0,.5),0 0 24px rgba(255,215,0,.35);
+  animation:goldAppear .5s ease;
+}
+@keyframes goldAppear{
+  from{opacity:0;transform:scale(.92)}
+  to{opacity:1;transform:scale(1)}
+}
+.mine-board{
+  display:grid;
+  gap:4px;
+  justify-content:center;
+  margin:12px auto;
+}
+.cell{
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  border:none;
+  background:#ffd1e5;
+  color:#4a3a3a;
+  font-weight:bold;
+  font-size:16px;
+  padding:0;
+  margin:0;
+}
+.cell.open{background:#fff5fb;border:1px solid #ffd1e5}
+.cell.flag{background:#ffe08a}
+.cell.mine{background:#ff7777}
+.roulette-wrap{
+  width:280px;
+  height:280px;
+  margin:18px auto;
+  position:relative;
+}
+.pointer{
+  position:absolute;
+  top:-8px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:2;
+  font-size:34px;
+  color:#ff6fae;
+}
+.wheel{
+  width:280px;
+  height:280px;
+  border-radius:50%;
+  border:8px solid #fff;
+  box-shadow:0 0 20px rgba(0,0,0,.18);
+  transition:transform 4s cubic-bezier(.12,.82,.2,1);
+  background:conic-gradient(#ff9ac8 0 60deg,#8fc7ff 60deg 120deg,#ffd36e 120deg 180deg,#b99cff 180deg 240deg,#90e0b0 240deg 300deg,#ff9a76 300deg 360deg);
+  position:relative;
+  overflow:hidden;
+}
+.wheel-label{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  background:rgba(255,255,255,.9);
+  padding:12px;
+  border-radius:18px;
+  font-weight:bold;
+  text-align:center;
+}
+.reveal-btn{background:#d6a300;color:#fff}
+.owner-name{font-weight:bold;color:#8a5a00}
+.guess-box{
+  background:#fff;
+  border:2px dashed #d6a300;
+  border-radius:16px;
+  padding:10px;
+  margin-top:10px;
+}
+
+.confirm-overlay{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  background:rgba(0,0,0,.62);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+}
+.confirm-box{
+  width:100%;
+  max-width:340px;
+  background:#fff;
+  border-radius:24px;
+  padding:18px;
+  text-align:center;
+  box-shadow:0 14px 40px rgba(0,0,0,.28);
+}
+.confirm-box h3{margin-top:0}
+.confirm-actions{display:flex;gap:10px}
+.confirm-actions button{flex:1}
+button{transition:transform .05s ease, opacity .05s ease}
+button.is-tapping{transform:scale(.96);opacity:.88}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1 onclick="titleTap()">vibe with</h1>
+
+  <div id="topPage" class="card">
+    <h2>トップページ</h2>
+    <button onclick="newTheme()">📝 お題を作る</button>
+    <button onclick="openStartPage()">🎮 投票を始める</button>
+    <button onclick="openThemeList()">📚 保存したお題を見る</button>
+    <button class="sub" onclick="openRoulette()">🎡 ルーレット</button>
+    <button class="sub" onclick="showPage('guidePage')">📖 使い方</button>
+    <button class="gray" onclick="openConfig()">⚙️ config</button>
+  </div>
+
+  <div id="guidePage" class="card hidden">
+    <h2>📖 使い方</h2>
+    <div class="rank-item"><strong>1. お題を作る</strong><p>好きな食べ物、外食何食べたい？、理想のデートなど、遊びたいお題を作ります。</p></div>
+    <div class="rank-item"><strong>2. ゲーム形式を選ぶ</strong><p>通常ランキング、自由回答→ランキング、2番目を決める、自由回答→1番とビリを選べます。</p></div>
+    <div class="rank-item"><strong>3. 回答者と投票者を分ける</strong><p>回答する人と投票する人を別々にできます。男性が回答して女性が投票するような遊び方に向いています。</p></div>
+    <div class="rank-item"><strong>4. 匿名モード</strong><p>回答順はランダム表示。匿名公開、完全匿名、匿名推理モードを選べます。</p></div>
+    <div class="rank-item"><strong>5. 結果発表</strong><p>全部表示、1位だけ、1位とビリだけ、1位〜3位だけを選べます。</p></div>
+    <div class="rank-item"><strong>6. おまけ</strong><p>タイトルタップでマインスイーパー。ルーレット、GOGO CHANCE、SUPER RARE、GOD風演出もあります。</p></div>
+    <button class="gray" onclick="safeGoTop()">トップに戻る</button>
+  </div>
+
+  <div id="historyPage" class="card hidden">
+    <h2>📜 Update History</h2>
+    <div class="rank-item">
+      <strong>Version 1.1.2</strong>
+      <p>・2位モード結果を「みんなが思う2位ランキング」に改善</p>
+      <p>・投票中の戻る操作を強化</p>
+      <p>・トップへ戻る確認画面を追加</p>
+      <p>・タップレスポンスを向上</p>
+      <p>・連打による二重選択を防止</p>
+    </div>
+    <div class="rank-item">
+      <strong>Version 1.1</strong>
+      <p>・回答者と投票者を分離できる機能を追加</p>
+      <p>・回答表示順ランダム化を追加</p><p>・匿名系では回答番号を非表示に変更</p>
+      <p>・匿名公開モードを追加</p>
+      <p>・完全匿名モードを追加</p>
+      <p>・匿名推理モードを追加</p>
+      <p>・リザルト表示方式を追加</p>
+      <p>・使い方ページを追加</p>
+      <p>・アップデート履歴ページを追加</p>
+      <p>・ルーレット機能を正式実装</p>
+      <p>・スマホズーム防止を追加</p>
+      <p>・vibe with表記へ統一</p>
+    </div>
+    <div class="rank-item">
+      <strong>Version 1.0</strong>
+      <p>・ランキング機能</p>
+      <p>・自由回答機能</p>
+      <p>・2番目を決める機能</p>
+      <p>・1番とビリを決める機能</p>
+      <p>・レア演出（SUPER RARE）</p>
+      <p>・GOGO CHANCE</p>
+      <p>・GOD風フリーズ</p>
+      <p>・Config機能</p>
+      <p>・マインスイーパー</p>
+    </div>
+    <button class="gray" onclick="safeGoTop()">トップに戻る</button>
+  </div>
+
+  <div id="createPage" class="card hidden">
+    <h2 id="createTitle">📝 お題作成</h2>
+
+    <label>ゲーム形式</label>
+    <select id="themeMode" onchange="renderModeOptions()">
+      <option value="preset">通常ランキング</option>
+      <option value="free">自由回答 → ランキング</option>
+      <option value="second">2番目を決める</option>
+      <option value="bestworst">自由回答 → 1番とビリを決める</option>
+    </select>
+
+    <label>お題名</label>
+    <input id="themeTitle" placeholder="例：外食何食べたい？">
+
+    <label>回答数 / 選ぶ数（1〜5）</label>
+    <input id="answerCount" type="number" min="1" max="5" value="5" onchange="syncCreateCounts()">
+
+    <label>選択肢の数（1〜5）※通常系のみ</label>
+    <input id="choiceCount" type="number" min="1" max="5" value="5" onchange="syncCreateCounts()">
+
+    <div id="presetChoiceArea">
+      <h3>ランキング候補</h3>
+      <div id="choiceInputs"></div>
+    </div>
+
+    <h3>点数配分</h3>
+    <p class="small">標準は 1位から順に 5, 3, 1, 0, -1</p>
+    <div id="scoreInputs"></div>
+    <button class="sub" onclick="resetScores()">標準点数に戻す</button>
+
+    <h3>参加方式</h3>
+    <label>回答者と投票者</label>
+    <select id="participantMode">
+      <option value="same">通常：回答者＝投票者</option>
+      <option value="split">回答者と投票者を分ける</option>
+    </select>
+    <p class="small">自由回答系で「分ける」を選ぶと、回答する人と投票する人を別々に入力できます。</p>
+
+    <h3>リザルト表示</h3>
+    <label>表示範囲</label>
+    <select id="resultMode">
+      <option value="all">全部表示</option>
+      <option value="top1">1位だけ</option>
+      <option value="topBottom">1位とビリだけ</option>
+      <option value="top3">1位〜3位だけ</option>
+    </select>
+
+    <label class="checkrow"><input type="checkbox" id="showTotalResult" checked> 全体結果を表示</label>
+    <label class="checkrow"><input type="checkbox" id="showPersonalResult" checked> 個人回答を表示</label>
+
+    <label>自由回答の回答者表示方式</label>
+    <select id="ownerRevealMode">
+      <option value="show">最初から表示</option>
+      <option value="reveal">匿名公開モード：結果でタップ公開</option>
+      <option value="hidden">完全匿名モード：最後まで非公開</option>
+      <option value="guess">匿名推理モード：誰の回答か予想して公開</option>
+    </select>
+
+    <h3>レア演出</h3>
+    <label class="checkrow"><input type="checkbox" id="themeRareEnabled" checked> このお題でレア演出を有効にする</label>
+
+    <button onclick="saveTheme()">保存する</button>
+    <button class="gray" onclick="safeGoTop()">トップに戻る</button>
+  </div>
+
+  <div id="themeListPage" class="card hidden">
+    <h2>📚 保存したお題</h2>
+    <div id="themeList"></div>
+    <button class="gray" onclick="safeGoTop()">トップに戻る</button>
+  </div>
+
+  <div id="startPage" class="card hidden">
+    <h2>🎮 投票準備</h2>
+    <label>お題を選ぶ</label>
+    <select id="themeSelect" onchange="renderParticipantSetup()"></select>
+    <div id="participantSetup"></div>
+    <button onclick="startGame()">スタート</button>
+    <button class="gray" onclick="safeGoTop()">トップに戻る</button>
+  </div>
+
+  <div id="answerInputPage" class="card hidden">
+    <h2 id="answerThemeTitle"></h2>
+    <h3 id="answerPlayerName"></h3>
+    <p class="small">他の人に見えないように入力してね</p>
+    <textarea id="freeAnswerText" placeholder="例：ラーメン、焼肉、寿司など"></textarea>
+    <button onclick="submitFreeAnswer()">回答する</button>
+  </div>
+
+  <div id="votePage" class="card hidden">
+    <h2 id="voteThemeTitle"></h2>
+    <h3 id="votePlayerName"></h3>
+    <p id="voteRankText" class="small"></p>
+    <div id="voteChoices"></div>
+    <h3>選んだ順番</h3>
+    <div id="selectedList"></div>
+    <button class="gray" onclick="undoSelection()">ひとつ前に戻る</button>
+  </div>
+
+  <div id="bestWorstPage" class="card hidden">
+    <h2 id="bwThemeTitle"></h2>
+    <h3 id="bwPlayerName"></h3>
+    <p class="small" id="bwStepText"></p>
+    <div id="bwChoices"></div>
+    <button class="gray" onclick="undoBestWorst()">ひとつ前に戻る</button>
+  </div>
+
+  <div id="handoffPage" class="blackout hidden">
+    <div class="box">
+      <h2 id="handoffText"></h2>
+      <p>前の人の回答は隠れています</p>
+      <button onclick="continueAfterHandoff()">開始</button>
+    </div>
+  </div>
+
+  <div id="resultPage" class="card hidden">
+    <h2>🏆 結果発表</h2>
+    <div class="tabs">
+      <button onclick="showResultTab('total')">全体結果</button>
+      <button class="sub" onclick="showResultTab('personal')">個人回答</button>
+    </div>
+    <div id="totalResultBox"></div>
+    <div id="personalResultBox" class="hidden"></div>
+    <button onclick="copyResult()">結果をコピー</button>
+    <button class="sub" onclick="openStartPage()">もう一度遊ぶ</button>
+    <button class="gray" onclick="safeGoTop()">トップに戻る</button>
+  </div>
+
+  <div id="roulettePage" class="card hidden">
+    <h2>🎡 ルーレット</h2>
+    <label>人数（2〜6）</label>
+    <input id="rouletteCount" type="number" min="2" max="6" value="4" onchange="makeRouletteInputs()">
+    <label>回転数（2〜10）</label>
+    <input id="rouletteSpins" type="number" min="2" max="10" value="5">
+    <p class="small">振り幅が大きい人ほど当たりやすくなります</p>
+    <div id="rouletteInputs"></div>
+    <div class="roulette-wrap">
+      <div class="pointer">▼</div>
+      <div id="wheel" class="wheel">
+        <div id="wheelLabel" class="wheel-label">vibe</div>
+      </div>
+    </div>
+    <button onclick="spinRoulette()">回す</button>
+    <button class="gray" onclick="safeGoTop()">トップに戻る</button>
+  </div>
+
+  <div id="minePage" class="card hidden">
+    <h2>💣 ミニマインスイーパー</h2>
+    <p class="small">タップで開く。長押しで旗🚩</p>
+    <p class="small" id="mineInfo"></p>
+    <div id="mineBoard" class="mine-board"></div>
+    <button class="sub" onclick="startMine()">リスタート</button>
+    <button class="gray" onclick="safeGoTop()">トップに戻る</button>
+  </div>
+
+  <div id="configLockPage" class="card hidden">
+    <h2>⚙️ config</h2>
+    <input id="configPasswordInput" type="password" placeholder="password">
+    <button onclick="unlockConfig()">解除</button>
+    <button class="gray" onclick="safeGoTop()">戻る</button>
+  </div>
+
+  <div id="configPage" class="card hidden">
+    <h2>⚙️ config</h2>
+    <h3>レア演出確認</h3>
+    <button onclick="showSuperRare()">SUPER RARE確認</button>
+    <button onclick="showGodFreeze('テスト参加者')">GOD風確認</button>
+    <button class="sub" onclick="testLamp()">GOGO CHANCE確認</button>
+
+    <h3>レア演出確率</h3>
+    <label>SUPER RARE基本カウント</label>
+    <input id="rareBaseInput" type="number" min="10" max="9999">
+    <label>GOGO点灯後の最小カウント</label>
+    <input id="gogoMinInput" type="number" min="1" max="99">
+    <label>GOGO点灯後の最大カウント</label>
+    <input id="gogoMaxInput" type="number" min="1" max="99">
+    <label>GOD風確率 分母</label>
+    <input id="godRateInput" type="number" min="100" max="999999">
+    <button onclick="saveRareSettings()">確率設定を保存</button>
+
+    <h3>パスワード変更</h3>
+    <input id="pass1Input" placeholder="パスワード1">
+    <input id="pass2Input" placeholder="パスワード2">
+    <button onclick="savePasswords()">パスワードを保存</button>
+    <button class="gray" onclick="safeGoTop()">トップに戻る</button>
+  </div>
+</div>
+
+<div id="versionBadge" class="version-badge hidden" onclick="showPage('historyPage')">vibe with<br>v1.1.2</div>
+<div id="lamp" class="hidden"><img src="gogo_chance.png" alt="GOGO CHANCE"></div>
+
+<script>
+let themes=JSON.parse(localStorage.getItem("vibeThemes")||localStorage.getItem("rankingThemes")||"[]");
+let config=JSON.parse(localStorage.getItem("vibeConfig")||"null")||{
+  pass1:"0721",
+  pass2:"hgc",
+  rareBase:100,
+  gogoMin:3,
+  gogoMax:7,
+  godRate:16384
+};
+
+let editingId=null;
+let currentTheme=null;
+let players=[];
+let responders=[];
+let voters=[];
+let currentPlayerIndex=0;
+let currentRank=1;
+let remainingChoices=[];
+let currentSelections=[];
+let allVotes=[];
+let resultItems=[];
+let lastRanking=[];
+let lastActorName="参加者";
+let freeAnswers=[];
+let freeAnswerIndex=0;
+let bwState={best:null,worst:null,step:"best"};
+let pendingNextAction=null;
+let wheelRotation=0;
+
+let rareCountdown=Number(localStorage.getItem("vibeRareCountdown")||"0");
+let gogoLead=Number(localStorage.getItem("vibeGogoLead")||"0");
+const defaultScores=[5,3,1,0,-1];
+let tapBusy=false;
+
+function guardTap(fn,button=null,delay=180){
+  if(tapBusy)return;
+  tapBusy=true;
+
+  if(button){
+    button.classList.add("is-tapping");
+    button.disabled=true;
+  }
+
+  requestAnimationFrame(()=>{
+    try{fn();}
+    finally{
+      setTimeout(()=>{
+        tapBusy=false;
+        if(button){
+          button.classList.remove("is-tapping");
+          button.disabled=false;
+        }
+      },delay);
+    }
+  });
+}
+
+if(!rareCountdown||rareCountdown<1) resetRareCountdown();
+
+function showPage(pageId){
+  [
+    "topPage","guidePage","historyPage","createPage","themeListPage","startPage",
+    "answerInputPage","votePage","bestWorstPage","handoffPage","resultPage",
+    "roulettePage","minePage","configLockPage","configPage"
+  ].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.classList.add("hidden");
+  });
+
+  const target=document.getElementById(pageId);
+  if(target) target.classList.remove("hidden");
+
+  const badge=document.getElementById("versionBadge");
+  if(badge){
+    badge.classList.toggle("hidden",pageId!=="topPage");
+    badge.style.pointerEvents=pageId==="topPage" ? "auto" : "none";
+  }
+
+  updateLamp();
+}
+
+function isPageVisible(id){
+  const el=document.getElementById(id);
+  return el && !el.classList.contains("hidden");
+}
+function currentPageId(){
+  const ids=[
+    "topPage","guidePage","historyPage","createPage","themeListPage","startPage",
+    "answerInputPage","votePage","bestWorstPage","handoffPage","resultPage",
+    "roulettePage","minePage","configLockPage","configPage"
+  ];
+  return ids.find(id=>isPageVisible(id))||"topPage";
+}
+
+function showConfirm(message,onYes){
+  const old=document.getElementById("confirmOverlay");
+  if(old) old.remove();
+
+  const overlay=document.createElement("div");
+  overlay.id="confirmOverlay";
+  overlay.className="confirm-overlay";
+  overlay.innerHTML=`
+    <div class="confirm-box">
+      <h3>確認</h3>
+      <p>${escapeHtml(message).replaceAll("\n","<br>")}</p>
+      <div class="confirm-actions">
+        <button class="gray" id="confirmNo">いいえ</button>
+        <button class="danger" id="confirmYes">はい</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  document.getElementById("confirmNo").onclick=()=>overlay.remove();
+  document.getElementById("confirmYes").onclick=()=>{
+    overlay.remove();
+    onYes();
+  };
+}
+
+function safeGoTop(){
+  const page=currentPageId();
+
+  if(page==="topPage") return;
+
+  let message="トップ画面へ戻りますか？";
+
+  if(page==="votePage"||page==="bestWorstPage"||page==="handoffPage"){
+    message="投票中ですがトップ画面へ戻りますか？\n進行中の投票データは失われます。";
+  }else if(page==="answerInputPage"){
+    message="回答入力中ですがトップ画面へ戻りますか？\n入力中の内容は失われます。";
+  }else if(page==="resultPage"){
+    message="結果発表を終了してトップ画面へ戻りますか？";
+  }else if(page==="createPage"){
+    message="お題作成中ですがトップ画面へ戻りますか？\n未保存の内容は失われます。";
+  }else if(page==="roulettePage"||page==="minePage"){
+    message="ゲームを終了してトップ画面へ戻りますか？";
+  }
+
+  showConfirm(message,()=>showPage("topPage"));
+}
+
+
+function saveStorage(){
+  localStorage.setItem("vibeThemes",JSON.stringify(themes));
+  localStorage.setItem("rankingThemes",JSON.stringify(themes));
+}
+
+function saveConfig(){
+  localStorage.setItem("vibeConfig",JSON.stringify(config));
+}
+
+function clamp(n,min,max){
+  return Math.max(min,Math.min(max,Number(n)||min));
+}
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function shuffleArray(arr){
+  const copy=[...arr];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+}
+
+function titleTap(){
+  if(isPageVisible("topPage")) openMinesweeper();
+}
+
+/* お題作成 */
+function newTheme(){
+  editingId=null;
+  document.getElementById("createTitle").textContent="📝 お題作成";
+  document.getElementById("themeMode").value="preset";
+  document.getElementById("themeTitle").value="";
+  document.getElementById("answerCount").value=5;
+  document.getElementById("choiceCount").value=5;
+  document.getElementById("participantMode").value="same";
+  document.getElementById("resultMode").value="all";
+  document.getElementById("ownerRevealMode").value="show";
+  document.getElementById("showTotalResult").checked=true;
+  document.getElementById("showPersonalResult").checked=true;
+  document.getElementById("themeRareEnabled").checked=true;
+  renderModeOptions();
+  initChoices(5);
+  initScores();
+  showPage("createPage");
+}
+
+function renderModeOptions(){
+  const mode=document.getElementById("themeMode").value;
+  const presetArea=document.getElementById("presetChoiceArea");
+  presetArea.classList.toggle("hidden",mode==="free"||mode==="bestworst");
+  syncCreateCounts();
+}
+
+function syncCreateCounts(){
+  let answerCount=clamp(document.getElementById("answerCount").value,1,5);
+  let choiceCount=clamp(document.getElementById("choiceCount").value,1,5);
+  document.getElementById("answerCount").value=answerCount;
+  document.getElementById("choiceCount").value=choiceCount;
+
+  const mode=document.getElementById("themeMode").value;
+  if(answerCount>choiceCount && mode!=="free" && mode!=="bestworst"){
+    answerCount=choiceCount;
+    document.getElementById("answerCount").value=choiceCount;
+  }
+
+  adjustChoiceInputs(choiceCount);
+  const currentScores=Array.from(document.querySelectorAll("#scoreInputs input")).map(i=>Number(i.value));
+  initScores(currentScores,answerCount);
+}
+
+function initChoices(count=5,values=[]){
+  const box=document.getElementById("choiceInputs");
+  box.innerHTML="";
+  for(let i=0;i<count;i++) addChoiceInput(values[i]||"");
+}
+
+function adjustChoiceInputs(count){
+  const box=document.getElementById("choiceInputs");
+  const current=Array.from(box.querySelectorAll("input")).map(i=>i.value);
+  initChoices(count,current);
+}
+
+function addChoiceInput(value=""){
+  const box=document.getElementById("choiceInputs");
+  const wrap=document.createElement("div");
+  wrap.className="row";
+  const input=document.createElement("input");
+  input.placeholder="例：ラーメン";
+  input.value=value;
+  wrap.appendChild(input);
+  box.appendChild(wrap);
+}
+
+function initScores(scores=defaultScores,count=null){
+  const c=count||clamp(document.getElementById("answerCount")?.value||5,1,5);
+  const box=document.getElementById("scoreInputs");
+  box.innerHTML="";
+  for(let i=0;i<c;i++){
+    const wrap=document.createElement("div");
+    wrap.className="row";
+
+    const label=document.createElement("div");
+    label.style.width="60px";
+    label.textContent=`${i+1}位`;
+
+    const input=document.createElement("input");
+    input.type="number";
+    input.className="scoreInput";
+    input.value=scores[i]??defaultScores[i]??0;
+
+    const unit=document.createElement("div");
+    unit.style.width="30px";
+    unit.textContent="点";
+
+    wrap.appendChild(label);
+    wrap.appendChild(input);
+    wrap.appendChild(unit);
+    box.appendChild(wrap);
+  }
+}
+
+function resetScores(){
+  initScores(defaultScores);
+}
+
+function getChoicesFromForm(){
+  return Array.from(document.querySelectorAll("#choiceInputs input"))
+    .map(i=>i.value.trim())
+    .filter(Boolean);
+}
+
+function getScoresFromForm(){
+  return Array.from(document.querySelectorAll("#scoreInputs input")).map(i=>Number(i.value));
+}
+
+function saveTheme(){
+  const mode=document.getElementById("themeMode").value;
+  const title=document.getElementById("themeTitle").value.trim();
+  const answerCount=clamp(document.getElementById("answerCount").value,1,5);
+  const choiceCount=clamp(document.getElementById("choiceCount").value,1,5);
+  const choices=getChoicesFromForm();
+  const scores=getScoresFromForm();
+
+  if(!title){alert("お題名を入力してね");return}
+  if((mode==="preset"||mode==="second") && choices.length<1){alert("選択肢を入力してね");return}
+  if((mode==="preset"||mode==="second") && answerCount>choices.length){alert("回答数は選択肢数以下にしてね");return}
+  if(scores.some(score=>Number.isNaN(score))){alert("点数は数字で入力してね");return}
+
+  const data={
+    id:editingId||Date.now(),
+    mode,
+    title,
+    answerCount,
+    choiceCount,
+    choices:(mode==="free"||mode==="bestworst")?[]:choices.slice(0,choiceCount),
+    scores,
+    participantMode:document.getElementById("participantMode").value,
+    resultMode:document.getElementById("resultMode").value,
+    ownerRevealMode:document.getElementById("ownerRevealMode").value,
+    rareEnabled:document.getElementById("themeRareEnabled").checked,
+    showTotal:document.getElementById("showTotalResult").checked,
+    showPersonal:document.getElementById("showPersonalResult").checked
+  };
+
+  if(editingId){
+    const idx=themes.findIndex(t=>t.id===editingId);
+    themes[idx]=data;
+    alert("編集を保存したよ！");
+  }else{
+    themes.push(data);
+    alert("保存したよ！");
+  }
+
+  saveStorage();
+  editingId=null;
+  showPage("topPage");
+}
+
+/* 一覧 */
+function openThemeList(){
+  const box=document.getElementById("themeList");
+  box.innerHTML="";
+  if(themes.length===0){
+    box.innerHTML="<p class='small'>まだお題がありません</p>";
+  }
+
+  themes.forEach(theme=>{
+    const modeLabel={
+      preset:"通常ランキング",
+      free:"自由回答→ランキング",
+      second:"2番目を決める",
+      bestworst:"自由回答→1番とビリ"
+    }[theme.mode||"preset"];
+
+    const resultLabel={
+      all:"全部表示",
+      top1:"1位だけ",
+      topBottom:"1位とビリだけ",
+      top3:"1位〜3位だけ"
+    }[theme.resultMode||"all"];
+
+    const div=document.createElement("div");
+    div.className="rank-item";
+    div.innerHTML=`
+      <strong>${escapeHtml(theme.title)}</strong>
+      <p class="small">形式：${modeLabel}</p>
+      <p class="small">回答/投票：${theme.participantMode==="split"?"分離":"通常"} / 結果：${resultLabel}</p>
+      <p class="small">全体：${theme.showTotal===false?"OFF":"ON"} / 個人：${theme.showPersonal===false?"OFF":"ON"} / レア：${theme.rareEnabled===false?"OFF":"ON"}</p>
+      <button class="edit" onclick="editTheme(${theme.id})">編集する</button>
+      <button class="danger" onclick="deleteTheme(${theme.id})">削除</button>
+    `;
+    box.appendChild(div);
+  });
+
+  showPage("themeListPage");
+}
+
+function editTheme(id){
+  const theme=themes.find(t=>t.id===id);
+  if(!theme)return;
+
+  editingId=id;
+  document.getElementById("createTitle").textContent="✏️ お題編集";
+  document.getElementById("themeMode").value=theme.mode||"preset";
+  document.getElementById("themeTitle").value=theme.title;
+  document.getElementById("answerCount").value=theme.answerCount||5;
+  document.getElementById("choiceCount").value=theme.choiceCount||(theme.choices?.length||5);
+  document.getElementById("participantMode").value=theme.participantMode||"same";
+  document.getElementById("resultMode").value=theme.resultMode||"all";
+  document.getElementById("ownerRevealMode").value=theme.ownerRevealMode||"show";
+  document.getElementById("showTotalResult").checked=theme.showTotal!==false;
+  document.getElementById("showPersonalResult").checked=theme.showPersonal!==false;
+  document.getElementById("themeRareEnabled").checked=theme.rareEnabled!==false;
+
+  renderModeOptions();
+  initChoices(theme.choiceCount||(theme.choices?.length||5),theme.choices||[]);
+  initScores(theme.scores||defaultScores,theme.answerCount||5);
+  showPage("createPage");
+}
+
+function deleteTheme(id){
+  if(!confirm("このお題を削除する？"))return;
+  themes=themes.filter(t=>t.id!==id);
+  saveStorage();
+  openThemeList();
+}
+
+/* スタート */
+function openStartPage(){
+  const select=document.getElementById("themeSelect");
+  select.innerHTML="";
+  if(themes.length===0){
+    alert("先にお題を作ってね");
+    newTheme();
+    return;
+  }
+
+  themes.forEach(theme=>{
+    const option=document.createElement("option");
+    option.value=theme.id;
+    option.textContent=theme.title;
+    select.appendChild(option);
+  });
+
+  renderParticipantSetup();
+  showPage("startPage");
+}
+
+function renderParticipantSetup(){
+  const theme=themes.find(t=>t.id===Number(document.getElementById("themeSelect").value))||themes[0];
+  const box=document.getElementById("participantSetup");
+  if(!theme){box.innerHTML="";return}
+
+  const needsResponders=theme.mode==="free"||theme.mode==="bestworst";
+  const split=theme.participantMode==="split" && needsResponders;
+
+  if(split){
+    box.innerHTML=`
+      <h3>回答者</h3>
+      <label>回答者人数</label>
+      <input id="responderCount" type="number" min="1" max="20" value="4" onchange="makeGroupInputs('responder')">
+      <div id="responderInputs"></div>
+
+      <h3>投票者</h3>
+      <label>投票者人数</label>
+      <input id="voterCount" type="number" min="1" max="20" value="4" onchange="makeGroupInputs('voter')">
+      <div id="voterInputs"></div>
+    `;
+    makeGroupInputs("responder");
+    makeGroupInputs("voter");
+  }else{
+    box.innerHTML=`
+      <label>参加人数</label>
+      <input id="playerCount" type="number" min="1" max="20" value="3" onchange="makeGroupInputs('player')">
+      <h3>参加者名</h3>
+      <div id="playerInputs"></div>
+    `;
+    makeGroupInputs("player");
+  }
+}
+
+function makeGroupInputs(type){
+  const count=Number(document.getElementById(type+"Count").value);
+  const box=document.getElementById(type+"Inputs");
+  box.innerHTML="";
+  for(let i=0;i<count;i++){
+    const input=document.createElement("input");
+    input.placeholder=`${i+1}人目の名前`;
+    box.appendChild(input);
+  }
+}
+
+function readNames(id){
+  return Array.from(document.querySelectorAll(`#${id} input`))
+    .map(i=>i.value.trim())
+    .filter(Boolean);
+}
+
+function startGame(){
+  const themeId=Number(document.getElementById("themeSelect").value);
+  currentTheme=themes.find(t=>t.id===themeId);
+
+  const needsResponders=currentTheme.mode==="free"||currentTheme.mode==="bestworst";
+  const split=currentTheme.participantMode==="split" && needsResponders;
+
+  if(split){
+    responders=readNames("responderInputs");
+    voters=readNames("voterInputs");
+    if(responders.length===0 || voters.length===0){
+      alert("回答者と投票者を入力してね");
+      return;
+    }
+  }else{
+    players=readNames("playerInputs");
+    if(players.length===0){
+      alert("参加者名を入れてね");
+      return;
+    }
+    responders=[...players];
+    voters=[...players];
+  }
+
+  players=[...voters];
+  currentPlayerIndex=0;
+  allVotes=[];
+  freeAnswers=[];
+  freeAnswerIndex=0;
+  resultItems=[];
+  lastRanking=[];
+
+  if(needsResponders){
+    lastActorName=responders[0]||"参加者";
+    showHandoff(`${responders[0]}さんの回答入力です`,()=>startFreeAnswer());
+  }else{
+    lastActorName=players[0]||"参加者";
+    showHandoff(`${players[0]}さんの番です`,()=>startPlayerVote());
+  }
+}
+
+/* 暗転 */
+function showHandoff(text,nextFn){
+  document.getElementById("handoffText").textContent=text;
+  pendingNextAction=nextFn;
+  showPage("handoffPage");
+}
+
+function continueAfterHandoff(){
+  if(pendingNextAction) pendingNextAction();
+}
+
+/* 自由回答 */
+function startFreeAnswer(){
+  lastActorName=responders[freeAnswerIndex]||"参加者";
+  document.getElementById("answerThemeTitle").textContent=`お題：${currentTheme.title}`;
+  document.getElementById("answerPlayerName").textContent=`👤 ${responders[freeAnswerIndex]} さん`;
+  document.getElementById("freeAnswerText").value="";
+  showPage("answerInputPage");
+}
+
+function submitFreeAnswer(){
+  const text=document.getElementById("freeAnswerText").value.trim();
+  if(!text){
+    alert("回答を入力してね");
+    return;
+  }
+
+  freeAnswers.push({
+    id:Date.now()+freeAnswerIndex,
+    player:responders[freeAnswerIndex],
+    text
+  });
+
+  freeAnswerIndex++;
+
+  if(freeAnswerIndex>=responders.length){
+    currentPlayerIndex=0;
+    showHandoff(`${players[0]}さんの番です`,()=>{
+      if(currentTheme.mode==="bestworst") startBestWorstVote();
+      else startPlayerVote();
+    });
+  }else{
+    showHandoff(`${responders[freeAnswerIndex]}さんの回答入力です`,()=>startFreeAnswer());
+  }
+}
+
+/* ランキング投票 */
+function startPlayerVote(){
+  currentRank=1;
+
+  const source=(currentTheme.mode==="free")
+    ? shuffleArray(freeAnswers.map((a,index)=>({
+        id:a.id,
+        text:a.text,
+        owner:a.player,
+        anonLabel:"匿名回答"
+      })))
+    : shuffleArray((currentTheme.choices||[]).map((text,index)=>({
+        id:index,
+        text,
+        owner:"",
+        anonLabel:"選択肢"
+      })));
+
+  remainingChoices=[...source];
+  currentSelections=[];
+  lastActorName=players[currentPlayerIndex]||"参加者";
+
+  document.getElementById("voteThemeTitle").textContent=`お題：${currentTheme.title}`;
+  document.getElementById("votePlayerName").textContent=`👤 ${players[currentPlayerIndex]} さんの番`;
+  showPage("votePage");
+  renderVote();
+}
+
+function getChoiceLabel(choice){
+  // 匿名系では「回答1・回答2」のような番号も出さない。
+  // 表示順と番号から回答者を推測されないように、回答本文だけを出す。
+  return choice.text;
+}
+
+function renderVote(){
+  const max=currentTheme.answerCount||5;
+  const mode=currentTheme.mode||"preset";
+
+  document.getElementById("voteRankText").textContent =
+    mode==="second" ? `2番目に近い順で ${max}個 選んでね` : `${currentRank}位にしたいものを選んでね`;
+
+  const choiceBox=document.getElementById("voteChoices");
+  choiceBox.innerHTML="";
+
+  remainingChoices.forEach(choice=>{
+    const btn=document.createElement("button");
+    btn.className="choice-btn";
+    btn.textContent=getChoiceLabel(choice);
+    btn.onclick=()=>guardTap(()=>selectChoice(choice.id),btn);
+    choiceBox.appendChild(btn);
+  });
+
+  const selectedBox=document.getElementById("selectedList");
+  selectedBox.innerHTML="";
+
+  currentSelections.forEach((choice,index)=>{
+    const div=document.createElement("div");
+    div.className="rank-item";
+    div.textContent=`${index+1}位：${getChoiceLabel(choice)}`;
+    selectedBox.appendChild(div);
+  });
+}
+
+function selectChoice(id){
+  lastActorName=players[currentPlayerIndex]||"参加者";
+  runRareLottery();
+
+  const choice=remainingChoices.find(c=>c.id===id);
+  if(!choice)return;
+
+  currentSelections.push(choice);
+  remainingChoices=remainingChoices.filter(item=>item.id!==id);
+  currentRank++;
+
+  const max=currentTheme.answerCount||5;
+  if(currentSelections.length>=max || remainingChoices.length===0){
+    finishPlayerVote();
+    return;
+  }
+
+  renderVote();
+}
+
+function undoSelection(){
+  if(currentSelections.length===0)return;
+  const last=currentSelections.pop();
+  remainingChoices.push(last);
+  currentRank=Math.max(1,currentRank-1);
+  renderVote();
+}
+
+function finishPlayerVote(){
+  allVotes.push({
+    player:players[currentPlayerIndex],
+    selections:[...currentSelections]
+  });
+
+  currentPlayerIndex++;
+
+  if(currentPlayerIndex>=players.length){
+    showResult();
+  }else{
+    showHandoff(`${players[currentPlayerIndex]}さんの番です`,()=>startPlayerVote());
+  }
+}
+
+/* 1番とビリ */
+function startBestWorstVote(){
+  bwState={best:null,worst:null,step:"best"};
+  lastActorName=players[currentPlayerIndex]||"参加者";
+  document.getElementById("bwThemeTitle").textContent=`お題：${currentTheme.title}`;
+  document.getElementById("bwPlayerName").textContent=`👤 ${players[currentPlayerIndex]} さんの番`;
+  showPage("bestWorstPage");
+  renderBestWorst();
+}
+
+function renderBestWorst(){
+  document.getElementById("bwStepText").textContent = bwState.step==="best" ? "1番を選んでね" : "ビリを選んでね";
+  const box=document.getElementById("bwChoices");
+  box.innerHTML="";
+
+  let list=shuffleArray(freeAnswers.map((a,index)=>({
+    id:a.id,
+    text:a.text,
+    owner:a.player,
+    anonLabel:"匿名回答"
+  })));
+
+  list.forEach(ans=>{
+    if(bwState.step==="worst" && bwState.best && ans.id===bwState.best.id)return;
+    const btn=document.createElement("button");
+    btn.className="choice-btn";
+    btn.textContent=getChoiceLabel(ans);
+    btn.onclick=()=>guardTap(()=>selectBestWorst(ans.id),btn);
+    box.appendChild(btn);
+  });
+}
+
+function selectBestWorst(id){
+  lastActorName=players[currentPlayerIndex]||"参加者";
+  runRareLottery();
+
+  const ans=freeAnswers.find(a=>a.id===id);
+  if(!ans)return;
+
+  const item={id:ans.id,text:ans.text,owner:ans.player,anonLabel:"回答"};
+
+  if(bwState.step==="best"){
+    bwState.best=item;
+    bwState.step="worst";
+    renderBestWorst();
+  }else{
+    bwState.worst=item;
+    allVotes.push({
+      player:players[currentPlayerIndex],
+      best:bwState.best,
+      worst:bwState.worst,
+      selections:[bwState.best,bwState.worst]
+    });
+    currentPlayerIndex++;
+    if(currentPlayerIndex>=players.length) showResult();
+    else showHandoff(`${players[currentPlayerIndex]}さんの番です`,()=>startBestWorstVote());
+  }
+}
+
+function undoBestWorst(){
+  if(bwState.step==="worst"){
+    bwState.best=null;
+    bwState.step="best";
+    renderBestWorst();
+  }
+}
+
+/* 結果 */
+function showResult(){
+  if(currentTheme.mode==="bestworst") buildBestWorstResult();
+  else buildRankingResult();
+
+  renderTotalResult();
+  renderPersonalResult();
+  showResultTab(currentTheme.showTotal===false ? "personal" : "total");
+  showPage("resultPage");
+}
+
+function buildRankingResult(){
+  const map={};
+  const source=(currentTheme.mode==="free")
+    ? freeAnswers.map((a,index)=>({id:a.id,text:a.text,owner:a.player,score:0,anonLabel:"匿名回答"}))
+    : (currentTheme.choices||[]).map((text,index)=>({id:index,text,owner:"",score:0,anonLabel:"選択肢"}));
+
+  source.forEach(item=>{
+    map[item.text]={...item};
+  });
+
+  allVotes.forEach(vote=>{
+    if(currentTheme.mode==="second"){
+      const secondChoice=vote.selections[1];
+      if(secondChoice && map[secondChoice.text]){
+        map[secondChoice.text].score+=1;
+      }
+      return;
+    }
+
+    vote.selections.forEach((choice,index)=>{
+      if(!map[choice.text])return;
+      map[choice.text].score+=(currentTheme.scores||defaultScores)[index]??0;
+    });
+  });
+
+  resultItems=Object.values(map).sort((a,b)=>{
+    if(b.score!==a.score)return b.score-a.score;
+    return a.text.localeCompare(b.text,"ja");
+  });
+  lastRanking=resultItems.map(i=>[i.text,i.score]);
+}
+
+function buildBestWorstResult(){
+  const map={};
+  freeAnswers.forEach((a,index)=>{
+    map[a.text]={id:a.id,text:a.text,owner:a.player,score:0,best:0,worst:0,anonLabel:"匿名回答"};
+  });
+
+  allVotes.forEach(vote=>{
+    if(map[vote.best.text]){
+      map[vote.best.text].score+=5;
+      map[vote.best.text].best++;
+    }
+    if(map[vote.worst.text]){
+      map[vote.worst.text].score-=3;
+      map[vote.worst.text].worst++;
+    }
+  });
+
+  resultItems=Object.values(map).sort((a,b)=>b.score-a.score);
+  lastRanking=resultItems.map(i=>[i.text,i.score]);
+}
+
+function getDisplayItems(){
+  const items=[...resultItems];
+
+  // 「2番目を決める」だけは専用の見せ方にする。
+  // リザルト表示設定に関係なく、みんなが2位だと思った集計を1位〜5位で表示。
+  if(currentTheme.mode==="second"){
+    return items.slice(0,5);
+  }
+
+  if(currentTheme.resultMode==="top1") return items.slice(0,1);
+  if(currentTheme.resultMode==="top3") return items.slice(0,3);
+  if(currentTheme.resultMode==="topBottom"){
+    if(items.length<=1)return items;
+    return [items[0],items[items.length-1]];
+  }
+  return items;
+}
+
+function resultTitle(item,realIndex,displayIndex){
+  if(currentTheme.mode==="second"){
+    if(displayIndex===0)return `🥇 1位 ${escapeHtml(item.text)}`;
+    if(displayIndex===1)return `🥈 2位 ${escapeHtml(item.text)}`;
+    if(displayIndex===2)return `🥉 3位 ${escapeHtml(item.text)}`;
+    return `${displayIndex+1}位 ${escapeHtml(item.text)}`;
+  }
+
+  if(currentTheme.resultMode==="topBottom" && displayIndex===1){
+    return `💀 ビリ ${escapeHtml(item.text)}`;
+  }
+  if(realIndex===0)return `🥇 ${escapeHtml(item.text)}`;
+  if(realIndex===1)return `🥈 ${escapeHtml(item.text)}`;
+  if(realIndex===2)return `🥉 ${escapeHtml(item.text)}`;
+  return `${realIndex+1}位 ${escapeHtml(item.text)}`;
+}
+
+function renderOwner(item,idx){
+  const mode=currentTheme.ownerRevealMode||"show";
+  const isFree=currentTheme.mode==="free" || currentTheme.mode==="bestworst";
+  if(!isFree || !item.owner)return "";
+
+  if(mode==="hidden"){
+    return `<p class="small">回答者は最後まで秘密です</p>`;
+  }
+
+  if(mode==="reveal"){
+    return `
+      <p class="small">誰の回答でしょう？</p>
+      <button class="reveal-btn" onclick="document.getElementById('owner-${idx}').classList.remove('hidden')">回答者を見る</button>
+      <p id="owner-${idx}" class="owner-name hidden">回答者：${escapeHtml(item.owner)}</p>
+    `;
+  }
+
+  if(mode==="guess"){
+    return `
+      <div class="guess-box">
+        <p class="small">これ誰の回答だと思う？みんなで予想してね</p>
+        <button class="reveal-btn" onclick="document.getElementById('owner-${idx}').classList.remove('hidden')">正解を見る</button>
+        <p id="owner-${idx}" class="owner-name hidden">${escapeHtml(item.owner)} でした！</p>
+      </div>
+    `;
+  }
+
+  return `<p class="small">回答者：${escapeHtml(item.owner)}</p>`;
+}
+
+function renderTotalResult(){
+  const box=document.getElementById("totalResultBox");
+  box.innerHTML=currentTheme.mode==="second"
+    ? "<h3>🎖️ みんなが思う2位ランキング</h3><p class='small'>投票者が「2位」として選んだ回数のランキングです</p>"
+    : "<h3>🏆 全体結果</h3>";
+
+  if(currentTheme.showTotal===false){
+    box.innerHTML+="<p class='small'>このお題では全体結果は非表示です</p>";
+    return;
+  }
+
+  getDisplayItems().forEach((item,displayIndex)=>{
+    const realIndex=resultItems.indexOf(item);
+    const div=document.createElement("div");
+    div.className="rank-item";
+    const unit=currentTheme.mode==="second" ? "票" : "点";
+    div.innerHTML=`
+      <div class="result-rank">${resultTitle(item,realIndex,displayIndex)}</div>
+      <div>${item.score}${unit}</div>
+      ${renderOwner(item,realIndex)}
+    `;
+    box.appendChild(div);
+  });
+}
+
+function renderPersonalResult(){
+  const box=document.getElementById("personalResultBox");
+  box.innerHTML=currentTheme.mode==="second"
+    ? "<h3>👥 それぞれが2位に選んだもの</h3>"
+    : "<h3>👥 個人回答</h3>";
+
+  if(currentTheme.showPersonal===false){
+    box.innerHTML+="<p class='small'>このお題では個人回答は非表示です</p>";
+    return;
+  }
+
+  allVotes.forEach(vote=>{
+    const div=document.createElement("div");
+    div.className="rank-item";
+    let html=`<strong>👤 ${escapeHtml(vote.player)}</strong>`;
+
+    if(currentTheme.mode==="bestworst"){
+      html+=`<p>1番：${escapeHtml(vote.best.text)}</p><p>ビリ：${escapeHtml(vote.worst.text)}</p>`;
+    }else if(currentTheme.mode==="second"){
+      const secondChoice=vote.selections[1];
+      html+=`<p>2位に選んだ：${secondChoice ? escapeHtml(secondChoice.text) : "未選択"}</p>`;
+    }else{
+      vote.selections.forEach((choice,index)=>{
+        html+=`<p>${index+1}位：${escapeHtml(choice.text)}</p>`;
+      });
+    }
+
+    div.innerHTML=html;
+    box.appendChild(div);
+  });
+}
+
+function showResultTab(type){
+  document.getElementById("totalResultBox").classList.toggle("hidden",type!=="total");
+  document.getElementById("personalResultBox").classList.toggle("hidden",type!=="personal");
+}
+
+function copyResult(){
+  let text=`【${currentTheme.title} 結果】\n\n`;
+  text+=currentTheme.mode==="second" ? "■みんなが思う2位ランキング\n" : "■全体結果\n";
+
+  getDisplayItems().forEach((item,index)=>{
+    const unit=currentTheme.mode==="second" ? "票" : "点";
+    text+=`${index+1}位：${item.text} ${item.score}${unit}`;
+    if(item.owner && currentTheme.ownerRevealMode==="show") text+=` / 回答者：${item.owner}`;
+    text+="\n";
+  });
+
+  text+=currentTheme.mode==="second" ? "\n■それぞれが2位に選んだもの\n" : "\n■個人回答\n";
+
+  allVotes.forEach(vote=>{
+    text+=`\n${vote.player}\n`;
+    if(currentTheme.mode==="bestworst"){
+      text+=`1番：${vote.best.text}\nビリ：${vote.worst.text}\n`;
+    }else if(currentTheme.mode==="second"){
+      const secondChoice=vote.selections[1];
+      text+=`2位に選んだ：${secondChoice ? secondChoice.text : "未選択"}\n`;
+    }else{
+      vote.selections.forEach((choice,index)=>{
+        text+=`${index+1}位：${choice.text}\n`;
+      });
+    }
+  });
+
+  navigator.clipboard.writeText(text)
+    .then(()=>alert("結果をコピーしたよ！"))
+    .catch(()=>alert("コピーできませんでした"));
+}
+
+/* レア演出 */
+function runRareLottery(){
+  if(!isPageVisible("votePage")&&!isPageVisible("bestWorstPage"))return;
+  const rareAllowed=currentTheme ? currentTheme.rareEnabled!==false : true;
+  if(!rareAllowed)return;
+
+  if(Math.floor(Math.random()*config.godRate)===0){
+    showGodFreeze(lastActorName);
+    return;
+  }
+
+  rareCountdown--;
+  localStorage.setItem("vibeRareCountdown",String(rareCountdown));
+  updateLamp();
+
+  if(rareCountdown<=0){
+    showSuperRare();
+    resetRareCountdown();
+    updateLamp();
+  }
+}
+
+function resetRareCountdown(){
+  const base=clamp(config.rareBase,10,9999);
+  const min=clamp(config.gogoMin,1,99);
+  const max=Math.max(min,clamp(config.gogoMax,1,99));
+  gogoLead=Math.floor(Math.random()*(max-min+1))+min;
+  rareCountdown=base+gogoLead;
+  localStorage.setItem("vibeRareCountdown",String(rareCountdown));
+  localStorage.setItem("vibeGogoLead",String(gogoLead));
+}
+
+function updateLamp(){
+  const lamp=document.getElementById("lamp");
+  if(!lamp)return;
+  const rareAllowed=currentTheme ? currentTheme.rareEnabled!==false : true;
+
+  if((isPageVisible("votePage")||isPageVisible("bestWorstPage")) && rareAllowed && rareCountdown>=1 && rareCountdown<=gogoLead){
+    lamp.classList.remove("hidden");
+  }else{
+    lamp.classList.add("hidden");
+  }
+}
+
+function testLamp(){
+  const lamp=document.getElementById("lamp");
+  lamp.classList.remove("hidden");
+  setTimeout(()=>updateLamp(),3000);
+}
+
+function showSuperRare(){
+  const overlay=document.createElement("div");
+  overlay.className="rare-overlay";
+  overlay.innerHTML=`
+    <img class="rare-img" src="super_rare.png" alt="SUPER RARE">
+    <button class="rare-close" onclick="this.closest('.rare-overlay').remove()">タップした！</button>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function showGodFreeze(name){
+  const overlay=document.createElement("div");
+  overlay.className="freeze-overlay";
+  document.body.appendChild(overlay);
+
+  setTimeout(()=>{
+    overlay.innerHTML=`
+      <div>
+        <div class="freeze-text">${escapeHtml(name)}から<br>飲んでください</div>
+        <button style="margin-top:30px" onclick="this.closest('.freeze-overlay').remove()">乾杯！</button>
+      </div>
+    `;
+  },1500);
+}
+
+/* ルーレット */
+function openRoulette(){
+  makeRouletteInputs();
+  showPage("roulettePage");
+}
+
+function makeRouletteInputs(){
+  const count=clamp(document.getElementById("rouletteCount").value,2,6);
+  document.getElementById("rouletteCount").value=count;
+  const box=document.getElementById("rouletteInputs");
+  box.innerHTML="";
+
+  const sample=["オイゲン","たろう","はなこ","じろう","まい","けん"];
+  for(let i=0;i<count;i++){
+    const div=document.createElement("div");
+    div.className="rank-item";
+    div.innerHTML=`
+      <input class="rName" placeholder="${i+1}人目の名前" value="${sample[i]||""}">
+      <label class="small">メーター振り幅</label>
+      <input class="rWeight" type="number" min="1" max="100" value="10">
+    `;
+    box.appendChild(div);
+  }
+}
+
+function spinRoulette(){
+  const names=Array.from(document.querySelectorAll(".rName")).map(i=>i.value.trim()||"名無し");
+  const weights=Array.from(document.querySelectorAll(".rWeight")).map(i=>clamp(i.value,1,100));
+  const total=weights.reduce((a,b)=>a+b,0);
+  let r=Math.random()*total;
+  let winner=0;
+
+  for(let i=0;i<weights.length;i++){
+    r-=weights[i];
+    if(r<=0){
+      winner=i;
+      break;
+    }
+  }
+
+  const spins=clamp(document.getElementById("rouletteSpins").value,2,10);
+  document.getElementById("rouletteSpins").value=spins;
+  const wheel=document.getElementById("wheel");
+  const label=document.getElementById("wheelLabel");
+  const speed=Math.max(2.2,5.2-spins*.25);
+
+  wheel.style.transition=`transform ${speed}s cubic-bezier(.12,.82,.2,1)`;
+  wheelRotation+=360*spins+(360-(winner*(360/names.length)+180/names.length));
+  wheel.style.transform=`rotate(${wheelRotation}deg)`;
+  label.textContent="回転中...";
+
+  setTimeout(()=>{
+    label.textContent=`🎯 ${names[winner]}`;
+  },speed*1000);
+}
+
+/* config */
+function openConfig(){
+  document.getElementById("configPasswordInput").value="";
+  showPage("configLockPage");
+}
+
+function unlockConfig(){
+  const pass=document.getElementById("configPasswordInput").value;
+
+  if(pass===config.pass1 || pass===config.pass2){
+    document.getElementById("pass1Input").value=config.pass1;
+    document.getElementById("pass2Input").value=config.pass2;
+    document.getElementById("rareBaseInput").value=config.rareBase;
+    document.getElementById("gogoMinInput").value=config.gogoMin;
+    document.getElementById("gogoMaxInput").value=config.gogoMax;
+    document.getElementById("godRateInput").value=config.godRate;
+    showPage("configPage");
+  }else{
+    alert("解除できません");
+  }
+}
+
+function savePasswords(){
+  const p1=document.getElementById("pass1Input").value.trim();
+  const p2=document.getElementById("pass2Input").value.trim();
+
+  if(!p1 || !p2){
+    alert("パスワードは2つとも入力してね");
+    return;
+  }
+
+  config.pass1=p1;
+  config.pass2=p2;
+  saveConfig();
+  alert("保存したよ");
+}
+
+function saveRareSettings(){
+  config.rareBase=clamp(document.getElementById("rareBaseInput").value,10,9999);
+  config.gogoMin=clamp(document.getElementById("gogoMinInput").value,1,99);
+  config.gogoMax=Math.max(config.gogoMin,clamp(document.getElementById("gogoMaxInput").value,1,99));
+  config.godRate=clamp(document.getElementById("godRateInput").value,100,999999);
+  saveConfig();
+  resetRareCountdown();
+  updateLamp();
+  alert("確率設定を保存したよ");
+}
+
+/* マインスイーパー */
+let mineSize=8;
+let mineCount=10;
+let mineCells=[];
+let mineGameOver=false;
+let pressTimer=null;
+
+function openMinesweeper(){
+  startMine();
+  showPage("minePage");
+}
+
+function startMine(){
+  mineGameOver=false;
+  mineCells=[];
+  const total=mineSize*mineSize;
+  const mines=new Set();
+
+  while(mines.size<mineCount){
+    mines.add(Math.floor(Math.random()*total));
+  }
+
+  for(let i=0;i<total;i++){
+    mineCells.push({mine:mines.has(i),open:false,flag:false,count:0});
+  }
+
+  for(let i=0;i<total;i++){
+    mineCells[i].count=countNearMines(i);
+  }
+
+  document.getElementById("mineInfo").textContent=`爆弾：${mineCount}個`;
+  renderMine();
+}
+
+function countNearMines(index){
+  return getNeighbors(index).filter(i=>mineCells[i] && mineCells[i].mine).length;
+}
+
+function getNeighbors(index){
+  const x=index%mineSize;
+  const y=Math.floor(index/mineSize);
+  const list=[];
+
+  for(let dy=-1;dy<=1;dy++){
+    for(let dx=-1;dx<=1;dx++){
+      if(dx===0&&dy===0)continue;
+      const nx=x+dx;
+      const ny=y+dy;
+      if(nx>=0&&nx<mineSize&&ny>=0&&ny<mineSize){
+        list.push(ny*mineSize+nx);
+      }
+    }
+  }
+
+  return list;
+}
+
+function renderMine(){
+  const board=document.getElementById("mineBoard");
+  board.innerHTML="";
+  board.style.gridTemplateColumns=`repeat(${mineSize},34px)`;
+
+  mineCells.forEach((cell,index)=>{
+    const btn=document.createElement("button");
+    btn.className="cell";
+
+    if(cell.open){
+      btn.classList.add("open");
+      if(cell.mine){
+        btn.classList.add("mine");
+        btn.textContent="💣";
+      }else{
+        btn.textContent=cell.count>0?cell.count:"";
+      }
+    }else if(cell.flag){
+      btn.classList.add("flag");
+      btn.textContent="🚩";
+    }
+
+    btn.onmousedown=()=>pressTimer=setTimeout(()=>toggleFlag(index),500);
+    btn.onmouseup=()=>clearTimeout(pressTimer);
+    btn.onmouseleave=()=>clearTimeout(pressTimer);
+    btn.ontouchstart=()=>{pressTimer=setTimeout(()=>toggleFlag(index),500)};
+    btn.ontouchend=()=>{clearTimeout(pressTimer)};
+    btn.onclick=()=>openCell(index);
+
+    board.appendChild(btn);
+  });
+}
+
+function toggleFlag(index){
+  if(mineGameOver||mineCells[index].open)return;
+  mineCells[index].flag=!mineCells[index].flag;
+  renderMine();
+}
+
+function openCell(index){
+  if(mineGameOver)return;
+  const cell=mineCells[index];
+  if(cell.open||cell.flag)return;
+
+  cell.open=true;
+
+  if(cell.mine){
+    mineGameOver=true;
+    mineCells.forEach(c=>{if(c.mine)c.open=true});
+    renderMine();
+    setTimeout(()=>alert("ゲームオーバー！"),100);
+    return;
+  }
+
+  if(cell.count===0){
+    getNeighbors(index).forEach(i=>{
+      if(!mineCells[i].open&&!mineCells[i].flag)openCell(i);
+    });
+  }
+
+  renderMine();
+  checkMineClear();
+}
+
+function checkMineClear(){
+  if(mineCells.filter(c=>!c.mine).every(c=>c.open)){
+    mineGameOver=true;
+    setTimeout(()=>alert("クリア！"),100);
+  }
+}
+
+/* スマホズーム防止 */
+let lastTouchEnd=0;
+document.addEventListener("touchend",function(e){
+  const now=Date.now();
+  if(now-lastTouchEnd<=350){
+    e.preventDefault();
+  }
+  lastTouchEnd=now;
+},{passive:false});
+
+document.addEventListener("gesturestart",function(e){
+  e.preventDefault();
+});
+
+document.addEventListener("gesturechange",function(e){
+  e.preventDefault();
+});
+
+document.addEventListener("gestureend",function(e){
+  e.preventDefault();
+});
+
+initChoices(5);
+initScores();
+makeRouletteInputs();
+showPage("topPage");
+</script>
+</body>
+</html>
